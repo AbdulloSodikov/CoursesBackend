@@ -14,7 +14,15 @@ dBModule = mySqlPackage.createConnection({
    dBModule.connect();
   
    
-   loginToken = 'a';
+   webModule.get('/auth', function(httpRequest, httpRespose){
+       console.log('SELECT login FROM users WHERE login = "' + httpRequest.query.login + '" AND password ="' 
+       + httpRequest.query.password +'"');
+           dBModule.query('SELECT login FROM users WHERE login = "' + httpRequest.query.login + '" AND password ="' 
+                + httpRequest.query.password +'"', function(dbError,dbRespose) {
+                    httpRespose.send(dbRespose)
+                }); 
+            }) 
+  
    webModule.get('/courses', function(httpRequest, httpRespose){
     
     dBModule.query('select title from courses', function(dbError,dbRespose) {
@@ -28,8 +36,8 @@ dBModule = mySqlPackage.createConnection({
             }); 
         }) 
 
-    
-   webModule.get('/lectures', function(httpRequest, httpRespose){
+    webModule.get('/lectures', function(httpRequest, httpRespose){
+        
     dBModule.query('SELECT title, published FROM lectures' , function(dbError,dbRespose) {
         httpRespose.send(dbRespose)
         }); 
