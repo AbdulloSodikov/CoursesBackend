@@ -14,12 +14,19 @@ dBModule = mySqlPackage.createConnection({
    dBModule.connect();
   
    
+   jwtModule = require('jsonwebtoken');
    webModule.get('/auth', function(httpRequest, httpRespose){
        console.log('SELECT login FROM users WHERE login = "' + httpRequest.query.login + '" AND password ="' 
        + httpRequest.query.password +'"');
            dBModule.query('SELECT login FROM users WHERE login = "' + httpRequest.query.login + '" AND password ="' 
                 + httpRequest.query.password +'"', function(dbError,dbRespose) {
-                    httpRespose.send(dbRespose)
+                    if (dbRespose.length == 0) {
+                    httpRespose.send(dbRespose);
+                    
+                } else {
+                      httpRespose.send('400');
+                   }
+                  
                 }); 
             }) 
   
