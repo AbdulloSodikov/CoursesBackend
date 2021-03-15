@@ -2,15 +2,6 @@ expressPackage = require('express');
 webModule = expressPackage();
 webModule.listen(500);
 
-
-
-
-
-
-
-
-
-
 mySqlPackage = require('mysql');
 
 dBModule = mySqlPackage.createConnection({
@@ -21,9 +12,25 @@ dBModule = mySqlPackage.createConnection({
     database : 'courses_a_sodikov'
    });
    dBModule.connect();
+  
+   
+   loginToken = 'a';
+   webModule.get('/courses', function(httpRequest, httpRespose){
+    
+    dBModule.query('select title from courses', function(dbError,dbRespose) {
+        httpRespose.send(dbRespose)
+        }); 
+    }) 
 
+    webModule.get('/mentors', function(httpRequest, httpRespose){
+            dBModule.query('select fio from mentors' , function(dbError,dbRespose) {
+            httpRespose.send(dbRespose)
+            }); 
+        }) 
+
+    
    webModule.get('/lectures', function(httpRequest, httpRespose){
-    dBModule.query('SELECT title, published FROM lectures', function(dbError,dbRespose) {
+    dBModule.query('SELECT title, published FROM lectures' , function(dbError,dbRespose) {
         httpRespose.send(dbRespose)
         }); 
     }) 
