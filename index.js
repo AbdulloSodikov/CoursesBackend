@@ -15,38 +15,44 @@ dBModule = mySqlPackage.createConnection({
   
    
    jwtModule = require('jsonwebtoken');
+
    webModule.get('/auth', function(httpRequest, httpRespose){
-       console.log('SELECT login FROM users WHERE login = "' + httpRequest.query.login + '" AND password ="' 
-       + httpRequest.query.password +'"');
-           dBModule.query('SELECT login FROM users WHERE login = "' + httpRequest.query.login + '" AND password ="' 
-                + httpRequest.query.password +'"', function(dbError,dbRespose) {
-                    if (dbRespose.length == 0) {
-                    httpRespose.send(dbRespose);
-                    
-                } else {
-                      httpRespose.send('400');
-                   }
-                  
-                }); 
-            }) 
-  
+         dBModule.query('SELECT login FROM users WHERE login = "' + httpRequest.query.login + '" AND password ="' 
+                     + httpRequest.query.password+'"', function(dbError,dbRespose) {
+                         if (dbRespose.length == 1){
+                             token = jwtModule.sign({'login': httpRequest.query.login }, 'super-puper-secret', {expiresIn: '1d'});
+                             httpRespose.send(token);
+                             
+                         }
+                         else {
+                             httpRespose.send('400');
+                         }
+             
+             //console.log(login);
+             });
+             
+         })
+
+
+          
    webModule.get('/courses', function(httpRequest, httpRespose){
-    
-    dBModule.query('select title from courses', function(dbError,dbRespose) {
-        httpRespose.send(dbRespose)
+     dBModule.query('select title from courses where id in (select id_course from users where login = "v");', function(dbError,dbRespose) {
+        httpRespose.send(dbRespose);
         }); 
     }) 
 
     webModule.get('/mentors', function(httpRequest, httpRespose){
-            dBModule.query('select fio from mentors' , function(dbError,dbRespose) {
-            httpRespose.send(dbRespose)
+            dBModule.query('select fio from mentors where id in (select id_mentors from courses where id in (select id_course from users where login = "v"))' , function(dbError,dbRespose) {
+               httpRespose.send(dbRespose);
             }); 
         }) 
 
     webModule.get('/lectures', function(httpRequest, httpRespose){
-        
-    dBModule.query('SELECT title, published FROM lectures' , function(dbError,dbRespose) {
-        httpRespose.send(dbRespose)
+        data = jwtModule.verify(httpRequest.query.loginToken, 'super-puper-secret', { expiresIn: '1d' });
+        login = data.login;
+        console.log(login);
+        dBModule.query('SELECT title, published, photo, video, shownotes  FROM lectures where id_course in (select id_course from users where login = "'+login+'")' , function(dbError,dbRespose) {
+        httpRespose.send(dbRespose);
         }); 
     }) 
     
