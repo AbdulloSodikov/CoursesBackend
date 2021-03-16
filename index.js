@@ -28,29 +28,24 @@ dBModule = mySqlPackage.createConnection({
                              httpRespose.send('400');
                          }
              
-             //console.log(login);
-             });
+                    });
              
          })
 
 
           
    webModule.get('/courses', function(httpRequest, httpRespose){
-     dBModule.query('select title from courses where id in (select id_course from users where login = "v");', function(dbError,dbRespose) {
+    
+    data = jwtModule.verify(httpRequest.query.loginToken, 'super-puper-secret', { expiresIn: '1d' });
+    login = data.login;
+    dBModule.query('select courses.title, mentors.fio from  courses, mentors where courses.id in (select id_course from users where login = "'+login+'") and mentors.id in (select id_mentors from  courses where id in (select id_course from users where login = "'+login+'"))', function(dbError,dbRespose) {
         httpRespose.send(dbRespose);
         }); 
     }) 
 
-    webModule.get('/mentors', function(httpRequest, httpRespose){
-            dBModule.query('select fio from mentors where id in (select id_mentors from courses where id in (select id_course from users where login = "v"))' , function(dbError,dbRespose) {
-               httpRespose.send(dbRespose);
-            }); 
-        }) 
-
     webModule.get('/lectures', function(httpRequest, httpRespose){
         data = jwtModule.verify(httpRequest.query.loginToken, 'super-puper-secret', { expiresIn: '1d' });
         login = data.login;
-        console.log(login);
         dBModule.query('SELECT title, published, photo, video, shownotes  FROM lectures where id_course in (select id_course from users where login = "'+login+'")' , function(dbError,dbRespose) {
         httpRespose.send(dbRespose);
         }); 
