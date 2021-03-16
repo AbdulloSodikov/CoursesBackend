@@ -12,8 +12,7 @@ dBModule = mySqlPackage.createConnection({
     database : 'courses_a_sodikov'
    });
    dBModule.connect();
-  
-   
+     
    jwtModule = require('jsonwebtoken');
 
    webModule.get('/auth', function(httpRequest, httpRespose){
@@ -31,8 +30,6 @@ dBModule = mySqlPackage.createConnection({
                     });
              
          })
-
-
           
    webModule.get('/courses', function(httpRequest, httpRespose){
     
