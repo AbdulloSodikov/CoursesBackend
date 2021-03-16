@@ -28,8 +28,7 @@ dBModule = mySqlPackage.createConnection({
                          }
              
                     });
-             
-         })
+                })
           
    webModule.get('/courses', function(httpRequest, httpRespose){
     
